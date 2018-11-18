@@ -1,0 +1,71 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<table id="grid">
+</table>
+
+@section Scripts
+{
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            var name = getRandomName();
+            var grid = $('#grid');
+
+            var gridHtml = '';
+            for (var row = 0; row < 50; row++) {
+                gridHtml += '<tr data-row="' + row + '">';
+                for (var col = 0; col < 50; col++) {
+                    gridHtml += '<td data-col="' + col + '">&nbsp;</td>';
+                }
+                gridHtml += '</tr>';
+            }
+            grid.html(gridHtml);
+
+            $('#grid tr td').click(function(e) {
+                e.preventDefault();
+                var row = $(e.target).parent().data('row');
+                var col = $(e.target).data('col');
+                $.ajax({
+                    url: 'api/grid/' + name + '/' + row + '/' + col,
+                    method: "GET",
+                    error: function() {
+                        alert('Sorry! This action could not be completed.');
+                    }
+                });
+            });
+
+            var connection = new signalR
+                .HubConnectionBuilder()
+                .withUrl("/api/hubs/grid")
+                .build();
+
+            connection.on("squareChanged",
+                function(message) {
+                    var cell = $('#grid tr[data-row=' + message.row + '] td[data-col=' + message.column + ']');
+                    cell.html(message.newValue === 0 ? '' : message.newValue);
+                    cell.addClass('just-changed');
+                    setTimeout(function() { cell.removeClass('just-changed'); }, 500);
+                });
+
+            connection.start().catch(function(err) {
+                return console.error(err.toString());
+            });
+        });
+
+        function getRandomName() {
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for (var i = 0; i < 5; i++)
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+            return text;
+        }
+
+    </script>
+}
+
