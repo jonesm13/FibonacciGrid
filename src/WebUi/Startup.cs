@@ -1,13 +1,13 @@
 ﻿namespace WebUi
 {
     using Domain.Entities;
-    using Hubs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Newtonsoft.Json.Converters;
 
     public class Startup
     {
@@ -28,10 +28,12 @@
 
             services.AddSingleton<InMemoryGridFactory>();
 
-            services.AddSignalR();
-
             services
                 .AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.Converters.Add(new StringEnumConverter());
+                })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -51,11 +53,6 @@
             app.UseCookiePolicy();
 
             app.UseMvc();
-
-            app.UseSignalR(builder =>
-            {
-                builder.MapHub<GridHub>("/api/hubs/grid");
-            });
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Domain.Aggregates
 {
+    using System;
     using System.Linq;
     using Entities;
     using Events;
@@ -19,8 +20,8 @@
         {
             Name = name;
 
-            state = new int[Constants.GridDimension, Constants.GridDimension];
-            fibonacciIndex = new int[Constants.GridDimension, Constants.GridDimension];
+            state = ArrayBuilder.BuildSquareArray(Constants.GridDimension, 0);
+            fibonacciIndex = ArrayBuilder.BuildSquareArray(Constants.GridDimension, -1);
         }
 
         public void Click(int row, int column)
@@ -51,28 +52,51 @@
 
         void FindSequences()
         {
-            int row = 0;
-
-            for(int col = 0;
-                col < Constants.GridDimension - Constants.SequenceLength;
-                col++)
+            for(int row = 0;
+                row < Constants.GridDimension - Constants.SequenceLength;
+                row++)
             {
-                int[] values = new int[Constants.SequenceLength];
-                for(int i = 0; i < Constants.SequenceLength; i++)
+                for(int col = 0;
+                    col < Constants.GridDimension - Constants.SequenceLength;
+                    col++)
                 {
-                    values[i] = fibonacciIndex[row, col + i];
-                }
-
-                if(values.IsIncrementingSequence())
-                {
-                    OnSequenceFound(new SequenceFoundEventArgs
+                    foreach(Direction direction in Enum.GetValues(typeof(Direction)))
                     {
-                        Row = row,
-                        Column = col,
-                        Direction = Direction.Horizontal
-                    });
+                        if (GetSequenceCandidate(
+                                row,
+                                col,
+                                direction)
+                            .IsIncrementingSequence())
+                        {
+                            OnSequenceFound(new SequenceFoundEventArgs
+                            {
+                                Row = row,
+                                Column = col,
+                                SequenceLength = Constants.SequenceLength,
+                                Direction = direction
+                            });
+                        }
+                    }
                 }
             }
+        }
+
+        int[] GetSequenceCandidate(int row, int column, Direction direction)
+        {
+            int[] result = new int[Constants.SequenceLength];
+            for(int i = 0; i < Constants.SequenceLength; i++)
+            {
+                if(direction == Direction.Horizontal)
+                {
+                    result[i] = fibonacciIndex[row, column + i];
+                }
+                else
+                {
+                    result[i] = fibonacciIndex[row + i, column];
+                }
+            }
+
+            return result;
         }
 
         void ClickSquare(int row, int column)
@@ -95,6 +119,12 @@
 
         protected virtual void OnSequenceFound(SequenceFoundEventArgs args)
         {
+            for (int c = 0; c < Constants.SequenceLength; c++)
+            {
+                state[args.Row, c + args.Column] = 0;
+                fibonacciIndex[args.Row, c + args.Column] = -1;
+            }
+
             SequenceFound?.Invoke(this, args);
         }
     }

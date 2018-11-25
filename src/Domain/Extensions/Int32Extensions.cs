@@ -17,9 +17,11 @@
         /// </returns>
         public static int GetFibonacciIndex(this int i)
         {
+            const int NotAFibonacciNumber = -1;
+
             if(i <= 0)
             {
-                return -1;
+                return NotAFibonacciNumber;
             }
 
             if(i <= 3)
@@ -43,7 +45,7 @@
 
             if(nextValue != i)
             {
-                return -1;
+                return NotAFibonacciNumber;
             }
 
             return result;

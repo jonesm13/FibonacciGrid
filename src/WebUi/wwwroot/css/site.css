@@ -29,6 +29,10 @@ table#grid tr td:hover {
     background-color: #ddd;
 }
 
+.just-reset {
+    background-color: green;
+}
+
 .just-changed {
     background-color: yellow;
 }

@@ -31,16 +31,37 @@
                 $.ajax({
                     url: 'api/grid/' + name + '/' + row + '/' + col,
                     method: "POST",
-                    success: function (data) {
-                        for (var i = 0; i < data.changedSquares.length; i++) {
-                            var thisEvent = data.changedSquares[i];
-                            var cell = $('td[data-index="' + thisEvent.row + ':' + thisEvent.column + '"]');
-                            cell.html(thisEvent.newValue === 0 ? '' : thisEvent.newValue);
-                            cell.addClass('just-changed');
-                        }
-                        setTimeout(function() {
-                            $('#grid td[class="just-changed"]').removeClass('just-changed');
-                        }, 500);
+                    success: function(data) {
+
+                        $.each(data.changedSquares,
+                            function(idx, s) {
+                                var cell = $('td[data-index="' + s.row + ':' + s.column + '"]');
+                                cell.html(s.newValue);
+                                cell.addClass('just-changed');
+                            });
+
+                        $.each(data.sequencesFound,
+                            function(idx, s) {
+                                var row = s.row;
+                                var col = s.column;
+                                for (var x = 0; x < s.sequenceLength; x++) {
+                                    var cell = $('td[data-index="' + row + ':' + col + '"]');
+                                    cell.html('&nbsp;');
+                                    cell.addClass('just-reset');
+                                    if (s.direction === 'Horizontal') {
+                                        col++;
+                                    } else {
+                                        row++;
+                                    }
+                                }
+                            });
+
+                        setTimeout(
+                            function() {
+                                $('#grid td[class="just-changed"]').removeClass('just-changed');
+                                $('#grid td[class="just-reset"]').removeClass('just-reset');
+                            },
+                            500);
                     },
                     error: function() {
                         alert('Sorry! This action could not be completed.');
