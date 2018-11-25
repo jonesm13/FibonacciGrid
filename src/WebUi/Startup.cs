@@ -1,15 +1,11 @@
 ﻿namespace WebUi
 {
-    using System;
-    using System.Threading.Tasks;
     using Domain.Entities;
-    using Domain.Events;
     using Hubs;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.SignalR;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
 
@@ -60,28 +56,6 @@
             {
                 builder.MapHub<GridHub>("/api/hubs/grid");
             });
-
-            app.Use(ClientSideEvents);
-        }
-
-        Task ClientSideEvents(HttpContext context, Func<Task> next)
-        {
-            IHubContext<GridHub> hubContext = context
-                .RequestServices
-                .GetRequiredService<IHubContext<GridHub>>();
-
-            DomainEvents
-                .Register<SquareChanged>(theEvent =>
-                {
-                    hubContext
-                        .Clients
-                        .All
-                        .SendCoreAsync(
-                            "squareChanged",
-                            new object[] {theEvent});
-                });
-
-            return Task.CompletedTask;
         }
     }
 }

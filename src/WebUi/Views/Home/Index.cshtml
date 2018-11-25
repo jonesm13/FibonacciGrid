@@ -7,8 +7,6 @@
 
 @section Scripts
 {
-    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-
     <script type="text/javascript">
 
         $(document).ready(function() {
@@ -17,9 +15,9 @@
 
             var gridHtml = '';
             for (var row = 0; row < 50; row++) {
-                gridHtml += '<tr data-row="' + row + '">';
+                gridHtml += '<tr>';
                 for (var col = 0; col < 50; col++) {
-                    gridHtml += '<td data-col="' + col + '">&nbsp;</td>';
+                    gridHtml += '<td data-index="' + row + ':' + col + '">&nbsp;</td>';
                 }
                 gridHtml += '</tr>';
             }
@@ -27,32 +25,29 @@
 
             $('#grid tr td').click(function(e) {
                 e.preventDefault();
-                var row = $(e.target).parent().data('row');
-                var col = $(e.target).data('col');
+                var index = $(e.target).data('index');
+                var indexSplit = index.split(':');
+                var row = indexSplit[0];
+                var col = indexSplit[1];
                 $.ajax({
                     url: 'api/grid/' + name + '/' + row + '/' + col,
-                    method: "GET",
+                    method: "POST",
+                    success: function (e) {
+                        for (var i = 0; i < e.changedSquares.length; i++) {
+                            var thisEvent = e.changedSquares[i];
+                            var cell = $('td[data-index="' + thisEvent.row + ':' + thisEvent.column + '"]');
+                            cell.html(thisEvent.newValue === 0 ? '' : thisEvent.newValue);
+                            cell.addClass('just-changed');
+                            
+                        }
+                        setTimeout(function() {
+                            $('#grid td[class="just-changed"]').removeClass('just-changed');
+                        }, 500);
+                    },
                     error: function() {
                         alert('Sorry! This action could not be completed.');
                     }
                 });
-            });
-
-            var connection = new signalR
-                .HubConnectionBuilder()
-                .withUrl("/api/hubs/grid")
-                .build();
-
-            connection.on("squareChanged",
-                function(message) {
-                    var cell = $('#grid tr[data-row=' + message.row + '] td[data-col=' + message.column + ']');
-                    cell.html(message.newValue === 0 ? '' : message.newValue);
-                    cell.addClass('just-changed');
-                    setTimeout(function() { cell.removeClass('just-changed'); }, 500);
-                });
-
-            connection.start().catch(function(err) {
-                return console.error(err.toString());
             });
         });
 

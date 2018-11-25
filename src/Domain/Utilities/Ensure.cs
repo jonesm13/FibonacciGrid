@@ -16,13 +16,5 @@
                 throw new ArgumentOutOfRangeException(argumentName);
             }
         }
-
-        public static void IsNotNull(object @object, string argumentName)
-        {
-            if (@object == null)
-            {
-                throw new ArgumentException(argumentName);
-            }
-        }
     }
 }
