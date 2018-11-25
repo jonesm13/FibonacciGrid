@@ -20,17 +20,25 @@ namespace Tests
                 raisedEvents.Add(args);
             };
 
-            // create a sequence starting in 0,0 extending to 0,3
-            theGrid.Click(0, 0);
-            theGrid.Click(3, 1);
-            theGrid.Click(5, 2);
-            theGrid.Click(7, 3);
+            // create a sequence
+            ClickTimes(theGrid, 0, 0, 1);
+            ClickTimes(theGrid, 3, 1, 2);
+            ClickTimes(theGrid, 5, 2, 3);
+            ClickTimes(theGrid, 7, 3, 5);
 
             // act
             // now complete the sequence
-            theGrid.Click(9, 4);
+            ClickTimes(theGrid, 9, 4, 8);
 
             Assert.Single(raisedEvents);
+        }
+
+        static void ClickTimes(Grid grid, int row, int column, int times)
+        {
+            for(int i = 0; i < times; i++)
+            {
+                grid.Click(row, column);
+            }
         }
     }
 }

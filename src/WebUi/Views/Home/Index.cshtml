@@ -38,7 +38,6 @@
                             var cell = $('td[data-index="' + thisEvent.row + ':' + thisEvent.column + '"]');
                             cell.html(thisEvent.newValue === 0 ? '' : thisEvent.newValue);
                             cell.addClass('just-changed');
-                            
                         }
                         setTimeout(function() {
                             $('#grid td[class="just-changed"]').removeClass('just-changed');
