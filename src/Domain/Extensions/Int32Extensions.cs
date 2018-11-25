@@ -6,9 +6,9 @@
         /// Returns the index of the given integer in the Fibonacci sequence.
         /// </summary>
         /// <remarks>
-        /// Ignores the initial 0 and duplicate 1 in the strict interpretation
-        /// of the Fibonacci sequence because the grid will compare square
-        /// values by value, rather than by sequence position.
+        /// Ignores the initial 0 and duplicate 1 in the strict Fibonacci
+        /// sequence because the grid will compare square values by value,
+        /// rather than by sequence position.
         /// </remarks>
         /// <param name="i">The input.</param>
         /// <returns>

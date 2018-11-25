@@ -51,6 +51,28 @@
 
         void FindSequences()
         {
+            int row = 0;
+
+            for(int col = 0;
+                col < Constants.GridDimension - Constants.SequenceLength;
+                col++)
+            {
+                int[] values = new int[Constants.SequenceLength];
+                for(int i = 0; i < Constants.SequenceLength; i++)
+                {
+                    values[i] = fibonacciIndex[row, col + i];
+                }
+
+                if(values.IsIncrementingSequence())
+                {
+                    OnSequenceFound(new SequenceFoundEventArgs
+                    {
+                        Row = row,
+                        Column = col,
+                        Direction = Direction.Horizontal
+                    });
+                }
+            }
         }
 
         void ClickSquare(int row, int column)

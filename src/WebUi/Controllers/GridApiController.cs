@@ -22,18 +22,25 @@
         {
             Grid grid = inMemoryGridFactory.GetOrCreate(name);
 
-            List<SquareChangedEventArgs> argsToSend = new List<SquareChangedEventArgs>();
+            List<SquareChangedEventArgs> squareChanged = new List<SquareChangedEventArgs>();
+            List<SequenceFoundEventArgs> sequenceFound = new List<SequenceFoundEventArgs>();
 
             grid.SquareChanged += (sender, args) =>
             {
-                argsToSend.Add(args);
+                squareChanged.Add(args);
+            };
+
+            grid.SequenceFound += (sender, args) =>
+            {
+                sequenceFound.Add(args);
             };
 
             grid.Click(new SquareIndex(row, column));
 
             ClickResponseModel result = new ClickResponseModel
             {
-                ChangedSquares = argsToSend
+                ChangedSquares = squareChanged,
+                SequencesFound = sequenceFound
             };
 
             return Ok(result);

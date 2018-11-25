@@ -22,13 +22,13 @@ namespace Tests
 
             // create a sequence
             ClickTimes(theGrid, 0, 0, 1);
-            ClickTimes(theGrid, 3, 1, 2);
-            ClickTimes(theGrid, 5, 2, 3);
-            ClickTimes(theGrid, 7, 3, 5);
+            ClickTimes(theGrid, 1, 1, 1);
+            ClickTimes(theGrid, 3, 2, 2);
+            ClickTimes(theGrid, 5, 3, 4);
 
             // act
             // now complete the sequence
-            ClickTimes(theGrid, 9, 4, 8);
+            ClickTimes(theGrid, 7, 4, 7);
 
             Assert.Single(raisedEvents);
         }
